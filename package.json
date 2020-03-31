@@ -1,0 +1,27 @@
+{
+  "name": "handshake_clone",
+  "version": "1.0.0",
+  "description": "handshake clone",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepenpatel3/Handshake_clone.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deepenpatel3/Handshake_clone/issues"
+  },
+  "homepage": "https://github.com/deepenpatel3/Handshake_clone#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.18.3",
+    "eslint-plugin-react-hooks": "^1.7.0"
+  }
+}
