@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { Redirect } from 'react-router';
 import cookie from 'react-cookies';
-import { login } from '../../js/actions/loginAction';
-import store from '../../js/store/index';
+import { studentLogin } from '../../js/actions/loginAction';
 
 class StudentSignIn extends Component {
     constructor(props, context) {
@@ -16,11 +15,10 @@ class StudentSignIn extends Component {
             email: document.getElementById("email").value,
             password: document.getElementById("password").value
         }
-        this.props.login(data);
+        this.props.studentLogin(data);
     }
     render() {
         let redirectVar = null, alertElement = null;
-        // console.log('Login status', this.props.isLoggedIn)
         if (cookie.load("SID")) {
             redirectVar = <Redirect to="/profile" />
         }
@@ -32,7 +30,6 @@ class StudentSignIn extends Component {
                 {redirectVar}
                 <form style={{ margin: '50px' }} id="loginForm" className='form-group' onSubmit={this.handleSubmit}>
                     <h1>Student Sign In:</h1>
-                    <h1>Login flag: {JSON.stringify(store.getState())}</h1>
                     <input
                         className='form-control'
                         placeholder="Email"
@@ -58,10 +55,9 @@ class StudentSignIn extends Component {
     }
 }
 
-
 function mapStateToProps(state) {
     return {
         isLoggedIn: state.Login.isLoggedIn
     };
 }
-export default connect(mapStateToProps, { login })(StudentSignIn);
+export default connect(mapStateToProps, { studentLogin })(StudentSignIn);

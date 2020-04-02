@@ -1,4 +1,5 @@
 //import the require dependencies
+const { mongoDB, frontendURL } = require("./src/Utils/config");
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
@@ -12,10 +13,8 @@ var multer = require('multer');
 const mysql = require('mysql2/promise');
 var path = require('path');
 
-// const mysql = require('mysql2');
+app.use(cors({ origin: frontendURL, credentials: true }));
 
-//use cors to allow cross origin resource sharing
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
 //use express session to maintain session data
 app.use(
@@ -27,9 +26,9 @@ app.use(
         activeDuration: 5 * 60 * 1000
     })
 );
-// app.use(bodyParser.urlencoded({
-//     extended: true
-//   }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.use(bodyParser.json());
 
 const storage = multer.diskStorage({
@@ -49,7 +48,7 @@ app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 //Allow Access Control
 app.use(function (req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.setHeader("Access-Control-Allow-Origin", frontendURL);
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader(
         "Access-Control-Allow-Methods",
@@ -57,143 +56,36 @@ app.use(function (req, res, next) {
     );
     res.setHeader(
         "Access-Control-Allow-Headers",
-        "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
+        "Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"
     );
     res.setHeader("Cache-Control", "no-cache");
     next();
 });
+const mongoose = require('mongoose');
 
-app.post("/companySignUp", function (req, res) {
-    console.log('inside company sign up');
-    let companyName = req.body.companyName;
-    let email = req.body.email;
-    let password = req.body.password;
-    let location = req.body.location;
-    let hash = bcrypt.hashSync(password, salt);
+var options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    poolSize: 500,
+    bufferMaxEntries: 0
+};
 
-    async function storeData() {
-
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [rows, fields] = await connection.execute('INSERT INTO `Company` (companyName, email, password, location) VALUES (?,?,?,?)', [companyName, email, hash, location]);
-        await connection.end();
+mongoose.connect(mongoDB, options, (err, res) => {
+    if (err) {
+        console.log(err);
+        console.log(`MongoDB Connection Failed`);
+    } else {
+        console.log(`MongoDB Connected`);
     }
+});
 
-    storeData()
-        .then(() => {
-            res.end();
-        }).catch(e => {
-            console.log(e)
-            console.log('error aavi')
-        })
-})
+const studentAccount = require("./src/routes/student/Account");
+const companyAccount = require("./src/routes/company/Account");
+const studentProfile = require("./src/routes/student/Profile");
 
-app.post("/studentSignUp", function (req, res) {
-    console.log('inside student sign up');
-    let name = req.body.name;
-    let email = req.body.email;
-    let password = req.body.password;
-    let city = req.body.city;
-    let school = req.body.school;
-    let hash = bcrypt.hashSync(password, salt);
-
-    async function storeData() {
-
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [rows, fields] = await connection.execute('INSERT INTO `Student` (name, email, password, city, school) VALUES (?,?,?,?,?)', [name, email, hash, city, school]);
-        await connection.end();
-    }
-
-    storeData()
-        .then(() => {
-            res.end();
-        }).catch(e => {
-            console.log(e)
-            console.log('error aavi')
-        })
-})
-
-app.post("/companySignIn", function (req, res) {
-    console.log('inside company sign IN');
-    let email = req.body.email;
-    let password = req.body.password;
-    console.log('req body', req.body);
-
-    async function doSignIn() {
-
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [upadatedRows, fields1] = await connection.execute('SELECT companyName, ID, password FROM `Company` WHERE email=(?)', [email]);
-        await connection.end();
-        if (upadatedRows.length) {
-            if (bcrypt.compareSync(password, upadatedRows[0].password)) {
-                console.log("password match");
-                return ([upadatedRows[0].ID, upadatedRows[0].companyName]);
-            } else {
-                console.log("password doesnt match")
-                res.status(401);
-            }
-        } else {
-            console.log("user doesnt exist")
-            res.status(401);
-        }
-    }
-    data = doSignIn()
-    data.then((r) => {
-        res.end([r[0], r[1]]);
-    }).catch(e => {
-        console.log('error aavi', e)
-        res.end();
-    })
-})
-
-app.post("/studentSignIn", function (req, res) {
-    console.log('inside student sign IN');
-    console.log('req body', req.body);
-    let email = req.body.email;
-    let password = req.body.password;
-
-    async function doSignIn() {
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [upadatedRows, fields1] = await connection.execute('SELECT name, ID, password FROM `Student` WHERE email=(?)', [email]);
-        await connection.end();
-        if (upadatedRows.length) {
-            if (bcrypt.compareSync(password, upadatedRows[0].password)) {
-                console.log("password match");
-                console.log('student ID', upadatedRows[0].ID)
-                res.end(JSON.stringify({ SID: upadatedRows[0].ID, name: upadatedRows[0].name, signInSuccess: true }));
-            } else {
-                console.log("pswd doesnt match")
-                res.end(JSON.stringify({ signInSuccess: false }))
-            }
-        } else {
-            console.log('user doesnt exist')
-            res.end(JSON.stringify({ signInSuccess: false }))
-        }
-    }
-    doSignIn()
-        .catch(e => {
-            console.log('error aavi', e)
-        })
-})
-
-app.get('/getStudentData', function (req, res) {
-    console.log('inside get get student data');
-
-    async function getData() {
-
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [upadatedRows, fields1] = await connection.execute('SELECT `name`,`school`,`degree`,`passingYear`,major, profilePicUrl FROM `Student` WHERE ID=(?)', [req.query.SID]);
-        await connection.end();
-        return upadatedRows;
-    }
-    data = getData()
-    data.then((r) => {
-        console.log(r);
-        res.send(r);
-    }).catch(e => {
-        console.log(e)
-        console.log('error aavi')
-    })
-})
+app.use("/company/account", companyAccount);
+app.use("/student/account", studentAccount);
+app.use("/student/profile", studentProfile);
 
 app.post('/updateProfilePic', upload.single('profilePic'), function (req, res) {
     console.log("profile pic api")

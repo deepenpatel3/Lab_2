@@ -13,6 +13,7 @@ class Navbar extends Component {
     handleLogout = () => {
         cookie.remove("SID");
         cookie.remove("name");
+        cookie.remove("token");
     };
     render() {
         return (

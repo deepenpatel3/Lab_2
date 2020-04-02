@@ -12,9 +12,6 @@ import cookie from 'react-cookies';
 class Profile extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-
-        }
     }
     render() {
         let redirectVar = null;
@@ -25,12 +22,12 @@ class Profile extends Component {
             <div className="container">
                 {redirectVar}
                 <Navbar />
-                {/* <div className='col-md-4'>
+                <div className='col-md-4'>
                     <div style={{ border: '1px dotted black' }}> <BasicDetails /> </div>
-                    <div style={{ border: '1px dotted black' }}> <ContactInfo /> </div>
-                    <div style={{ border: '1px dotted black' }}> <Skills /> </div>
+                    {/* <div style={{ border: '1px dotted black' }}> <ContactInfo /> </div>
+                    <div style={{ border: '1px dotted black' }}> <Skills /> </div> */}
                 </div>
-                <div className='col-md-8'>
+                {/* <div className='col-md-8'>
                     <div style={{ border: '1px dotted black' }}><CareerObjective /></div>
                     <div style={{ border: '1px dotted black' }}><EducationDetails /></div>
                     <div style={{ border: '1px dotted black' }}><Experience /></div>

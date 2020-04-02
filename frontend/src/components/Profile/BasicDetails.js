@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import cookie from "react-cookies";
-axios.defaults.withCredentials = true;
+import { connect } from "react-redux";
+import { studentGetBasicDetails } from "../../js/actions/profileAction";
 
 class BasicDetails extends Component {
     constructor(props) {
@@ -9,39 +10,16 @@ class BasicDetails extends Component {
         this.state = {
             name: '',
             school: '',
-            degree: '',
-            major: '',
-            passingYear: '',
             profilePic: '',
             city: '',
-            state: '',
-            dob: '',
-            country: '',
-            editFlag: false,
-            refreshCount: 0
+            editFlag: false
         }
         this.handleEdit = this.handleEdit.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
         this.handleSave = this.handleSave.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
     componentDidMount() {
-        axios.get('http://localhost:3001/getStudentData', { params: { SID: cookie.load("SID") } })
-            .then(async (response) => {
-                console.log("Status Code : ", response.status);
-                await this.setState({
-                    name: response.data[0].name,
-                    school: response.data[0].school,
-                    degree: response.data[0].degree,
-                    passingYear: response.data[0].passingYear,
-                    major: response.data[0].major,
-                    profilePic: response.data[0].profilePicUrl
-                })
-                console.log('profie pic', this.state.profilePic)
-            })
-            .catch(error => {
-                console.log(error);
-            })
+        this.props.studentGetBasicDetails();
     }
     handleEdit = () => {
         this.setState({
@@ -88,11 +66,9 @@ class BasicDetails extends Component {
         if (this.state.editFlag === false) {
             infoOrForm =
                 <ul style={{ width: '100px' }} className="container" >
-                    <li className="list-group-item">{this.state.name}</li>
-                    <li className="list-group-item">{this.state.school}</li>
-                    <li className="list-group-item">{this.state.degree}</li>
-                    <li className="list-group-item">{this.state.major}</li>
-                    <li className="list-group-item">Graduates in {this.state.passingYear}</li>
+                    <li className="list-group-item">{this.props.name}</li>
+                    <li className="list-group-item">School: {this.props.school}</li>
+                    <li className="list-group-item">City: {this.props.city}</li>
                 </ul>
 
             editButton =
@@ -224,4 +200,12 @@ class BasicDetails extends Component {
     }
 }
 
-export default BasicDetails;
+function mapStateToProps(state) {
+    return {
+        name: state.StudentProfile.name,
+        school: state.StudentProfile.school,
+        city: state.StudentProfile.city,
+        profilePicURL: state.StudentProfile.profilePicURL
+    }
+}
+export default connect(mapStateToProps, { studentGetBasicDetails })(BasicDetails);

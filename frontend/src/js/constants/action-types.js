@@ -1,1 +1,4 @@
-export const LOG_IN = "LOG_IN";
+export const STUDENT_LOG_IN = "STUDENT_LOG_IN";
+export const COMPANY_LOG_IN = "COMPANY_LOG_IN";
+export const STUDENT_SIGN_UP = "STUDENT_SIGN_UP";
+export const STUDENT_GET_BASIC_DETAILS = "STUDENT_GET_BASIC_DETAILS";
