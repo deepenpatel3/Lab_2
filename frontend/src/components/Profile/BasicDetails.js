@@ -1,34 +1,26 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import cookie from "react-cookies";
 import { connect } from "react-redux";
-import { studentGetBasicDetails } from "../../js/actions/profileAction";
+import { studentGetBasicDetails, studentUpdateBasicDetails } from "../../js/actions/profileAction";
+import axios from 'axios';
 
 class BasicDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
-            school: '',
-            profilePic: '',
-            city: '',
+            profilePicURL: "",
             editFlag: false
         }
         this.handleEdit = this.handleEdit.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
         this.handleSave = this.handleSave.bind(this);
     }
-    componentDidMount() {
+    componentWillMount() {
         this.props.studentGetBasicDetails();
     }
     handleEdit = () => {
         this.setState({
             editFlag: true
-        })
-    }
-    handleChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value
         })
     }
     handleCancel = () => {
@@ -37,35 +29,45 @@ class BasicDetails extends Component {
         })
     }
     handleSave = () => {
-        let data = {
+        this.props.studentUpdateBasicDetails({
             SID: cookie.load("SID"),
-            name: this.state.name,
-            dob: this.state.dob,
-            city: this.state.city,
-            state: this.state.state,
-            country: this.state.country,
-            degree: this.state.degree,
-            major: this.state.major,
-            passingYear: this.state.passingYear
-        }
-        axios.post('http://localhost:3001/updateStudentData', data)
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                this.setState({
-                    editFlag: false
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
+            name: document.getElementById("name").value,
+            city: document.getElementById("city").value,
+            school: document.getElementById("school").value
+        });
+        this.setState({
+            editFlag: false
+        })
     }
+    // submit = (e) => {
+    //     e.preventDefault();
+    //     console.log("form", e.target)
+    //     let formdata = {
+    //         profilePic: e.target.profilePic.file,
+    //         SID: e.target.SID.value
+    //     }
+    //     console.log("form data", formdata);
+    //     // axios({
+    //     //     url: '',
+    //     //     method: "POST",
+    //     //     headers: {
+    //     //         'Content-Type': 'application/json',
+    //     //         // 'Authorization': cookie.load("token")
+    //     //     },
+    //     //     data: formData
+    //     // })
+    //     //     .then(response => {
+    //     //         // console.log("response", response);
+    //     //         return dispatch({ type: STUDENT_UPDATE_BASIC_DETAILS, payload: response.data.token });
+    //     //     })
+    // }
     render() {
         let infoOrForm = null;
         let editButton = null;
-
+        console.log('Rerender with edit flag', this.state.editFlag);
         if (this.state.editFlag === false) {
             infoOrForm =
-                <ul style={{ width: '100px' }} className="container" >
+                <ul style={{ width: '150px' }}>
                     <li className="list-group-item">{this.props.name}</li>
                     <li className="list-group-item">School: {this.props.school}</li>
                     <li className="list-group-item">City: {this.props.city}</li>
@@ -91,19 +93,7 @@ class BasicDetails extends Component {
                                 required
                                 autoFocus />
                         </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input
-                                type="date"
-                                id="dob"
-                                name="dob"
-                                placeholder="Date of Birth(MM/DD/YYYY)"
-                                onChange={this.handleChange}
-                                required />
-                        </td>
-
-                    </tr>
+                    </tr><br />
                     <tr>
                         <td>
                             <input
@@ -114,62 +104,18 @@ class BasicDetails extends Component {
                                 onChange={this.handleChange}
                                 required />
                         </td>
-                    </tr>
+                    </tr><br />
                     <tr>
                         <td>
                             <input
                                 type="text"
-                                id="state"
-                                name="state"
-                                placeholder="State"
+                                id="school"
+                                name="school"
+                                placeholder="School"
                                 onChange={this.handleChange}
                                 required />
                         </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input
-                                type="text"
-                                id="country"
-                                name="country"
-                                placeholder="Country"
-                                onChange={this.handleChange}
-                                required />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input
-                                type="text"
-                                id="degree"
-                                name="degree"
-                                placeholder="Current Degree"
-                                onChange={this.handleChange}
-                                required />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input
-                                type="text"
-                                id="major"
-                                name="major"
-                                placeholder="Major"
-                                onChange={this.handleChange}
-                                required />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input
-                                type="number"
-                                id="passingYear"
-                                name="passingYear"
-                                placeholder="Graduation Year"
-                                onChange={this.handleChange}
-                                required />
-                        </td>
-                    </tr>
+                    </tr><br />
                     <tr>
                         <td>
                             <button className="btn btn-danger btn-xs" onClick={this.handleCancel}>Cancel</button>
@@ -183,8 +129,8 @@ class BasicDetails extends Component {
             <div className="container">
                 <div style={{ width: '1px solid black' }} className='col-md-6'>
                     <div>
-                        <img src={this.state.profilePic} style={{ height: '150px', weight: '100px' }}></img>
-                        <form action="http://localhost:3001/updateProfilePic" method='POST' encType='multipart/form-data' onSubmit={this.refresh}>
+                        <img src={this.state.profilePicURL} style={{ height: '150px', weight: '100px' }}></img>
+                        <form action="http://localhost:3001/updateProfilePic" method="POST" encType='multipart/form-data' >
                             <input style={{ display: "none" }} name='SID' value={cookie.load("SID")}></input>
                             <input type='file' name='profilePic' id='profilePic'></input>
                             <button className='btn btn-primary' type='submit'>Save</button>
@@ -192,7 +138,7 @@ class BasicDetails extends Component {
                     </div>
                 </div>
                 <div className='col-md-6'>
-                    <div>{infoOrForm}</div>
+                    <div><br />{infoOrForm}</div>
                     <div>{editButton}</div>
                 </div>
             </div >
@@ -204,8 +150,7 @@ function mapStateToProps(state) {
     return {
         name: state.StudentProfile.name,
         school: state.StudentProfile.school,
-        city: state.StudentProfile.city,
-        profilePicURL: state.StudentProfile.profilePicURL
+        city: state.StudentProfile.city
     }
 }
-export default connect(mapStateToProps, { studentGetBasicDetails })(BasicDetails);
+export default connect(mapStateToProps, { studentGetBasicDetails, studentUpdateBasicDetails })(BasicDetails);

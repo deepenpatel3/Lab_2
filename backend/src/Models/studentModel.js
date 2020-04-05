@@ -9,7 +9,7 @@ var studentSchema = new Schema({
     skills: [{ name: String }],
     dateOfBirth: Date,
     city: String,
-    profilePicUrl: String,
+    profilePicUrl: 'String',
     educationDetails: [{ school: String, locaion: String, degree: String, major: String, gpa: Number, passingYear: Number }],
     careerObjective: String,
     phone: Number,

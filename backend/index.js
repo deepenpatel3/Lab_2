@@ -7,11 +7,13 @@ var session = require("express-session");
 var cookieParser = require("cookie-parser");
 var cors = require("cors");
 const bcrypt = require('bcrypt');
+var kafka = require('./kafka/client');
 const saltRounds = 10;
 const salt = bcrypt.genSaltSync(saltRounds);
 var multer = require('multer');
 const mysql = require('mysql2/promise');
 var path = require('path');
+const Students = require("./src/Models/studentModel");
 
 app.use(cors({ origin: frontendURL, credentials: true }));
 
@@ -61,6 +63,7 @@ app.use(function (req, res, next) {
     res.setHeader("Cache-Control", "no-cache");
     next();
 });
+
 const mongoose = require('mongoose');
 
 var options = {
@@ -87,29 +90,51 @@ app.use("/company/account", companyAccount);
 app.use("/student/account", studentAccount);
 app.use("/student/profile", studentProfile);
 
+app.post('/book', function (req, res) {
+    console.log('inside test api');
+    kafka.make_request('post_book', req.body, function (err, results) {
+        console.log('in result');
+        console.log(results);
+        if (err) {
+            console.log("Inside err");
+            res.json({
+                status: "error",
+                msg: "System Error, Try Again."
+            })
+        } else {
+            console.log("Inside else");
+            res.json({
+                updatedList: results
+            });
+
+            res.end();
+        }
+
+    });
+});
+
 app.post('/updateProfilePic', upload.single('profilePic'), function (req, res) {
-    console.log("profile pic api")
     console.log("Inside update profile picture");
     var host = req.hostname;
     console.log("Hostname", host)
     console.log("File", req.file)
     var imagepath = req.protocol + "://" + host + ':3001/' + req.file.path;
-    let sql = 'update Student set profilePicUrl=? where ID = ?'
-    console.log('imagepath', imagepath);
-    async function updateData() {
+    console.log('imagepath- ', imagepath, " & type of imagehath- ", typeof (imagepath));
+    console.log('sid', req.body.SID)
 
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [rows, fields] = await connection.execute(sql, [imagepath, req.body.SID]);
-        await connection.end();
-    }
-    updateData()
-        .then((r) => {
-            console.log("updated profile picrture successfully");
-            res.redirect("http://localhost:3000/profile");
-        }).catch(e => {
-            console.log(e)
-            console.log('error aavi')
-            res.end();
+    Students.findByIdAndUpdate({ _id: req.body.SID }, { profilePicURL: imagepath }, { new: true })
+        .then(student => {
+            if (student) {
+                // res.redirect("http://localhost:3000/profile");
+                console.log('updated', student)
+            }
+            else {
+                console.log('wrong student id')
+                res.status(401).end("wrong student id")
+            }
+        })
+        .catch(error => {
+            console.log('update profile picture error', error)
         })
 });
 

@@ -12,7 +12,7 @@ function auth() {
         secretOrKey: secret
     };
     passport.use("student", new JwtStrategy(opts, (jwt_payload, callback) => {
-        console.log("jwt payload", jwt_payload);
+        // console.log("jwt payload", jwt_payload);
         const SID = jwt_payload.SID;
         Students.findById(SID, (err, results) => {
             if (err) {
