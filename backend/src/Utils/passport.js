@@ -11,6 +11,7 @@ function auth() {
         jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
         secretOrKey: secret
     };
+    // console.log("inside passport")
     passport.use("student", new JwtStrategy(opts, (jwt_payload, callback) => {
         // console.log("jwt payload", jwt_payload);
         const SID = jwt_payload.SID;

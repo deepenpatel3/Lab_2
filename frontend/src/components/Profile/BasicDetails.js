@@ -8,7 +8,7 @@ class BasicDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            profilePicURL: "",
+            profilePic: "",
             editFlag: false
         }
         this.handleEdit = this.handleEdit.bind(this);
@@ -17,6 +17,20 @@ class BasicDetails extends Component {
     }
     componentWillMount() {
         this.props.studentGetBasicDetails();
+        let data = {
+            SID: cookie.load("SID")
+        }
+        axios({
+            url: 'http://localhost:3001/getProfilePic',
+            method: "GET",
+            params: data
+        })
+            .then(response => {
+                console.log("student basic details", response.data);
+                this.setState({
+                    profilePic: response.data
+                })
+            })
     }
     handleEdit = () => {
         this.setState({
@@ -39,28 +53,6 @@ class BasicDetails extends Component {
             editFlag: false
         })
     }
-    // submit = (e) => {
-    //     e.preventDefault();
-    //     console.log("form", e.target)
-    //     let formdata = {
-    //         profilePic: e.target.profilePic.file,
-    //         SID: e.target.SID.value
-    //     }
-    //     console.log("form data", formdata);
-    //     // axios({
-    //     //     url: '',
-    //     //     method: "POST",
-    //     //     headers: {
-    //     //         'Content-Type': 'application/json',
-    //     //         // 'Authorization': cookie.load("token")
-    //     //     },
-    //     //     data: formData
-    //     // })
-    //     //     .then(response => {
-    //     //         // console.log("response", response);
-    //     //         return dispatch({ type: STUDENT_UPDATE_BASIC_DETAILS, payload: response.data.token });
-    //     //     })
-    // }
     render() {
         let infoOrForm = null;
         let editButton = null;
@@ -129,7 +121,7 @@ class BasicDetails extends Component {
             <div className="container">
                 <div style={{ width: '1px solid black' }} className='col-md-6'>
                     <div>
-                        <img src={this.state.profilePicURL} style={{ height: '150px', weight: '100px' }}></img>
+                        <img src={this.state.profilePic} style={{ height: '150px', weight: '100px' }}></img>
                         <form action="http://localhost:3001/updateProfilePic" method="POST" encType='multipart/form-data' >
                             <input style={{ display: "none" }} name='SID' value={cookie.load("SID")}></input>
                             <input type='file' name='profilePic' id='profilePic'></input>

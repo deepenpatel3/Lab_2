@@ -14,13 +14,15 @@ export const studentLogin = (loginData) => dispatch => {
     })
         .then(response => response.json())
         .then(response => {
-            if (response.signInSuccess) {
-                var decoded = jwt_decode(response.token.split(' ')[1]);
+            console.log("login resp0nse", response)
+            var decoded = jwt_decode(response.token.split(' ')[1]);
+            console.log("decoded", decoded)
+            if (decoded.signInSuccess) {
                 cookie.save("token", response.token);
                 cookie.save("SID", decoded.SID);
                 cookie.save("name", decoded.name);
             }
-            return dispatch({ type: STUDENT_LOG_IN, payload: response.signInSuccess });
+            return dispatch({ type: STUDENT_LOG_IN, payload: decoded.signInSuccess });
         })
 }
 

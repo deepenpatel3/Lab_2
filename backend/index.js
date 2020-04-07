@@ -73,7 +73,7 @@ var options = {
     bufferMaxEntries: 0
 };
 
-mongoose.connect(mongoDB, options, (err, res) => {
+mongoose.connect(mongoDB, options, (err) => {
     if (err) {
         console.log(err);
         console.log(`MongoDB Connection Failed`);
@@ -81,6 +81,30 @@ mongoose.connect(mongoDB, options, (err, res) => {
         console.log(`MongoDB Connected`);
     }
 });
+var collections = mongoose.connections[0].collections;
+var names = [];
+
+Object.keys(collections).forEach(function (k) {
+    names.push(k);
+});
+
+console.log("collections- ", names);
+// Students.find({}, (err, student) => {
+//     if (err) {
+//         console.log("error")
+//         // return callback(err, false);
+//     }
+//     if (student) {
+//         console.log('results', student);
+//         // callback(null, results);
+//     }
+//     else {
+//         console.log("nothing")
+//         // callback(null, false);
+//     }
+// });
+
+
 
 const studentAccount = require("./src/routes/student/Account");
 const companyAccount = require("./src/routes/company/Account");
@@ -90,43 +114,20 @@ app.use("/company/account", companyAccount);
 app.use("/student/account", studentAccount);
 app.use("/student/profile", studentProfile);
 
-app.post('/book', function (req, res) {
-    console.log('inside test api');
-    kafka.make_request('post_book', req.body, function (err, results) {
-        console.log('in result');
-        console.log(results);
-        if (err) {
-            console.log("Inside err");
-            res.json({
-                status: "error",
-                msg: "System Error, Try Again."
-            })
-        } else {
-            console.log("Inside else");
-            res.json({
-                updatedList: results
-            });
-
-            res.end();
-        }
-
-    });
-});
-
 app.post('/updateProfilePic', upload.single('profilePic'), function (req, res) {
     console.log("Inside update profile picture");
     var host = req.hostname;
     console.log("Hostname", host)
     console.log("File", req.file)
     var imagepath = req.protocol + "://" + host + ':3001/' + req.file.path;
-    console.log('imagepath- ', imagepath, " & type of imagehath- ", typeof (imagepath));
+    // console.log('imagepath- ', imagepath, " & type of imagehath- ", typeof (imagepath));
     console.log('sid', req.body.SID)
 
-    Students.findByIdAndUpdate({ _id: req.body.SID }, { profilePicURL: imagepath }, { new: true })
+    Students.findByIdAndUpdate({ _id: req.body.SID }, { profilePic: imagepath, name: imagepath }, { new: true })
         .then(student => {
             if (student) {
-                // res.redirect("http://localhost:3000/profile");
-                console.log('updated', student)
+                console.log('profilePicURL: ', student.profilePic);
+                res.redirect("http://localhost:3000/profile");
             }
             else {
                 console.log('wrong student id')
@@ -137,114 +138,22 @@ app.post('/updateProfilePic', upload.single('profilePic'), function (req, res) {
             console.log('update profile picture error', error)
         })
 });
-
-app.post('/updateStudentData', function (req, res) {
-    console.log('inside post update student data');
-    console.log(req.body);
-    let SID = req.body.SID;
-    let name = req.body.name;
-    let dob = req.body.dob;
-    let city = req.body.city;
-    let state = req.body.state;
-    let country = req.body.country;
-    let degree = req.body.degree;
-    let major = req.body.major;
-    let passingYear = req.body.passingYear;
-
-    async function updateData() {
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        await connection.execute('UPDATE `Student` SET `name`=(?),`dob`=(?),`city`=(?),`state`=(?),`country`=(?), degree=? ,major=?,passingYear=? WHERE `ID`=(?)', [name, dob, city, state, country, degree, major, passingYear, SID]);
-        await connection.end();
-    }
-    updateData()
-        .then(() => {
-            console.log("updated student data successfully");
-            res.end("updated student data successfully");
-        }).catch(e => {
-            console.log(e)
-            console.log('Error - update student data')
+app.get('/getProfilePic', function (req, res) {
+    // console.log('req body', req.query)
+    Students.findById({ _id: req.query.SID })
+        .then(student => {
+            if (student) {
+                res.status(200).end(student.profilePic);
+            }
+            else {
+                console.log('wrong student id')
+                res.status(401).end("wrong student id")
+            }
         })
-})
-
-app.get('/getContactInfo', function (req, res) {
-    console.log('inside get get contact info');
-
-    async function getData() {
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [upadatedRows, fields1] = await connection.execute('SELECT `email`,`phone` FROM `Student` WHERE ID=(?)', [req.query.SID]);
-        await connection.end();
-        return upadatedRows;
-    }
-    data = getData()
-    data.then((r) => {
-        res.send(r);
-    }).catch(e => {
-        console.log(e)
-        console.log('error aavi')
-    })
-})
-
-app.post('/updateContactInfo', function (req, res) {
-    console.log('inside post update contact info');
-    console.log(req.body);
-    let SID = req.body.SID;
-    let email = req.body.email;
-    let phone = req.body.phone;
-
-    async function updateData() {
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [rows, fields] = await connection.execute('UPDATE `Student` SET `email`=(?),`phone`=(?) WHERE `ID`=(?)', [email, phone, SID]);
-        await connection.end();
-    }
-    updateData()
-        .then(() => {
-            console.log("contact info updated successfully");
-        }).catch(e => {
-            console.log(e)
-            console.log('error aavi')
+        .catch(error => {
+            console.log('update profile picture error', error)
         })
-})
-
-app.get('/getCareerObjective', function (req, res) {
-    console.log('inside get get career objective');
-
-    async function getData() {
-
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [upadatedRows, fields1] = await connection.execute('SELECT `careerObjective` FROM `Student` WHERE ID=(?)', [req.query.SID]);
-        await connection.end();
-        return upadatedRows;
-    }
-
-    data = getData()
-    data.then((r) => {
-        console.log(r);
-        res.send(r);
-    }).catch(e => {
-        console.log(e)
-        console.log('error aavi')
-    })
-})
-
-app.post('/updateCareerObjective', function (req, res) {
-    console.log('inside post update career objective');
-    let careerObjective = req.body.careerObjective;
-
-    async function updateData() {
-
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [rows, fields] = await connection.execute('UPDATE `Student` SET `careerObjective`=(?) WHERE `ID`=(?)', [careerObjective, req.query.SID]);
-        await connection.end();
-    }
-
-    updateData()
-        .then(() => {
-            console.log("career objective updated successfully");
-        }).catch(e => {
-            console.log(e)
-            console.log('error aavi')
-        })
-})
+});
 
 app.get('/getEducationDetails', function (req, res) {
     console.log('inside get get education details');
@@ -433,28 +342,6 @@ app.post('/updateExperience', function (req, res) {
             console.log(e)
             console.log('error aavi')
         })
-})
-
-app.get('/getSkills', function (req, res) {
-    console.log('inside get get skills');
-    let SID = req.query.ID;
-
-    async function getData() {
-
-        const connection = await mysql.createConnection({ host: 'handshakedb.clco8f6rhzmw.us-east-1.rds.amazonaws.com', user: 'admin', password: 'admin123', database: 'handshake_clone', port: 3306 });
-        const [upadatedRows, fields1] = await connection.execute('select SkillID, skill from Skill where SID = ?', [SID]);
-        await connection.end();
-        return upadatedRows;
-    }
-
-    data = getData()
-    data.then((r) => {
-        // console.log('got the skills', r);
-        res.send(r);
-    }).catch(e => {
-        console.log(e)
-        console.log('error aavi')
-    })
 })
 
 app.post("/addSkill", function (req, res) {

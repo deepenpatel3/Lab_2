@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-axios.defaults.withCredentials = true;
+import { connect } from "react-redux";
+import cookie from "react-cookies";
+import { studentGetCareerObjective, studentUpdateCareerObjective } from "../../js/actions/profileAction";
 
 class CareerObjective extends Component {
     constructor(props) {
@@ -12,28 +13,13 @@ class CareerObjective extends Component {
         this.handleCancel = this.handleCancel.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.handleSave = this.handleSave.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
     componentDidMount() {
-        axios.get('http://localhost:3001/getCareerObjective', { params: { ID: localStorage.getItem("ID") } })
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                this.setState({
-                    careerObjective: response.data[0].careerObjective
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
+        this.props.studentGetCareerObjective();
     }
     handleEdit = () => {
         this.setState({
             editFlag: true
-        })
-    }
-    handleChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value
         })
     }
     handleCancel = () => {
@@ -43,18 +29,10 @@ class CareerObjective extends Component {
     }
     handleSave = () => {
         let data = {
-            careerObjective: this.state.careerObjective
+            SID: cookie.load("SID"),
+            careerObjective: document.getElementById("careerObjective").value
         }
-        axios.post('http://localhost:3001/updateCareerObjective', data)
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                this.setState({
-                    editFlag: false
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
+        this.props.studentUpdateCareerObjective(data);
     }
     render() {
         let editButton = null;
@@ -64,7 +42,7 @@ class CareerObjective extends Component {
         if (this.state.editFlag === false) {
             infoOrForm =
                 <ul className="container" >
-                    <li className="list-group-item">{this.state.careerObjective}</li>
+                    <li className="list-group-item">{this.props.careerObjective}</li>
                 </ul>
 
             editButton =
@@ -81,7 +59,6 @@ class CareerObjective extends Component {
                         type="text"
                         id="careerObjective"
                         name="careerObjective"
-                        onChange={this.handleChange}
                         required
                         autoFocus />
                     <br />
@@ -98,5 +75,9 @@ class CareerObjective extends Component {
         );
     }
 }
-
-export default CareerObjective;
+function mapStateToProps(state) {
+    return {
+        careerObjective: state.StudentProfile.careerObjective
+    }
+}
+export default connect(mapStateToProps, { studentGetCareerObjective, studentUpdateCareerObjective })(CareerObjective);

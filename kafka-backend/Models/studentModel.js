@@ -20,4 +20,4 @@ var studentSchema = new Schema({
         versionKey: false
     });
 
-module.exports = mongoose.model('student', studentSchema);
+module.exports = mongoose.model('students', studentSchema);

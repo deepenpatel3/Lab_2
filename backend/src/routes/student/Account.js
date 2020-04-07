@@ -1,45 +1,45 @@
 "use strict";
 const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const salt = bcrypt.genSaltSync(saltRounds);
-const Students = require('../../Models/studentModel');
 const jwt = require('jsonwebtoken');
 const { secret } = require('../../Utils/config');
+const kafka = require("../../../kafka/client");
 const { auth } = require("../../Utils/passport");
+const Students = require("../../Models/studentModel")
 auth();
 
 router.post("/signIn", (req, res) => {
     console.log('inside student sign IN');
     console.log('req body', req.body);
-    let password = req.body.password;
-
-    Students.findOne({ email: req.body.email })
-        .then(student => {
-            if (student) {
-                if (bcrypt.compareSync(password, student.password)) {
-                    const payload = { SID: student._id, name: student.name };
-                    const token = jwt.sign(payload, secret, {
-                        expiresIn: 1008000
-                    });
-                    console.log('sending jwt token')
-                    res.status(200).end(JSON.stringify({ token: "JWT " + token, signInSuccess: true }))
-                    // res.end("JWT " + token);
-                }
-                else {
-                    console.log('wrong password')
-                    res.status(401).end(JSON.stringify({ signInSuccess: false }))
+    let body = {
+        email: req.body.email,
+        password: req.body.password
+    }
+    kafka.make_request('login', { "path": "student_login", "body": body }, function (err, result) {
+        console.log('in student login result');
+        if (err) {
+            console.log('error', err)
+            res.send({
+                signinSuccess: false
+            })
+        } else {
+            console.log("result", result);
+            if (result.signInSuccess) {
+                var payload = {
+                    signInSuccess: result.signInSuccess,
+                    SID: result.SID,
+                    name: result.name
                 }
             }
             else {
-                console.log('wrong email')
-                res.status(401).end(JSON.stringify({ signInSuccess: false }))
+                var payload = { signInSuccess: result.signInSuccess }
             }
-        })
-        .catch(error => {
-            console.log('student login error', error)
-        })
+            var token = jwt.sign(payload, secret, {
+                expiresIn: 1008000 // in seconds
+            });
+            res.end(JSON.stringify({ token: "JWT " + token }))
+        }
+    });
 });
 
 router.post("/signUp", function (req, res) {

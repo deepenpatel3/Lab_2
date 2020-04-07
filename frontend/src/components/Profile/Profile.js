@@ -24,14 +24,14 @@ class Profile extends Component {
                 <Navbar />
                 <div className='col-md-4'>
                     <div style={{ border: '1px dotted black' }}> <BasicDetails /> </div>
-                    {/* <div style={{ border: '1px dotted black' }}> <ContactInfo /> </div>
-                    <div style={{ border: '1px dotted black' }}> <Skills /> </div> */}
+                    <div style={{ border: '1px dotted black' }}> <ContactInfo /> </div>
+                    <div style={{ border: '1px dotted black' }}> <Skills /> </div>
                 </div>
-                {/* <div className='col-md-8'>
+                <div className='col-md-8'>
                     <div style={{ border: '1px dotted black' }}><CareerObjective /></div>
-                    <div style={{ border: '1px dotted black' }}><EducationDetails /></div>
-                    <div style={{ border: '1px dotted black' }}><Experience /></div>
-                </div> */}
+                    {/*<div style={{ border: '1px dotted black' }}><EducationDetails /></div>
+                    {/* <div style={{ border: '1px dotted black' }}><Experience /></div> */}
+                </div>
             </div>
         );
     }

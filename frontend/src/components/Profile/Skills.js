@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import SingleSkill from './singleSkill';
-axios.defaults.withCredentials = true;
+import { connect } from "react-redux";
+import { studentGetSkills } from "../../js/actions/profileAction";
 
 class Skills extends Component {
     constructor(props) {
@@ -12,22 +12,11 @@ class Skills extends Component {
             skill: '',
             addFlag: false
         }
-        this.handleChange = this.handleChange.bind(this);
         this.handleToggle = this.handleToggle.bind(this);
         this.handleSave = this.handleSave.bind(this);
     }
     componentDidMount() {
-        axios.get('http://localhost:3001/getSkills', { params: { ID: localStorage.getItem("ID") } })
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                console.log('skills received', response.data);
-                this.setState({
-                    skillArray: this.state.skillArray.concat(response.data)
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
+        this.props.studentGetSkills();
     }
 
     handleToggle = () => {
@@ -42,11 +31,6 @@ class Skills extends Component {
             })
         }
     }
-    handleChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value
-        })
-    }
     handleSave = (e) => {
         console.log('skill sent', this.state.skill)
         let data = {
@@ -54,16 +38,16 @@ class Skills extends Component {
             skill: this.state.skill
         }
         console.log('pressed save button', data)
-        axios.post('http://localhost:3001/addSkill', data)
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                this.setState({
-                    addFlag: false
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
+        // axios.post('http://localhost:3001/addSkill', data)
+        //     .then(response => {
+        //         console.log("Status Code : ", response.status);
+        //         this.setState({
+        //             addFlag: false
+        //         })
+        //     })
+        //     .catch(error => {
+        //         console.log(error);
+        //     })
     }
     render() {
         let skillElement = null;
@@ -108,4 +92,4 @@ class Skills extends Component {
     }
 }
 
-export default Skills;
+export default connect(null, { studentGetSkills })(Skills);

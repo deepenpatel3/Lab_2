@@ -1,44 +1,26 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import cookie from 'react-cookies';
+import { studentGetContactInfo, studentUpdateContactInfo } from '../../js/actions/profileAction';
+import { connect } from "react-redux";
 axios.defaults.withCredentials = true;
 
 class ContactInfo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            editFlag: false,
-            email: '',
-            phone: ''
+            editFlag: false
         }
         this.handleCancel = this.handleCancel.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.handleSave = this.handleSave.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-
     }
     componentDidMount() {
-        axios.get('http://localhost:3001/getContactInfo', { params: { SID: cookie.load("SID") } })
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                console.log('contact details', response.data)
-                this.setState({
-                    email: response.data[0].email,
-                    phone: response.data[0].phone
-                })
-            })
-            .catch(error => {
-                console.log(error);
-            })
+        this.props.studentGetContactInfo();
     }
     handleEdit = () => {
         this.setState({
             editFlag: true
-        })
-    }
-    handleChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value
         })
     }
     handleCancel = () => {
@@ -46,31 +28,27 @@ class ContactInfo extends Component {
             editFlag: false
         })
     }
-    handleSave = () => {
-        let data = {
+    handleSave = (e) => {
+        e.preventDefault();
+        this.props.studentUpdateContactInfo({
             SID: cookie.load("SID"),
-            email: this.state.email,
-            phone: this.state.phone
-        }
-        axios.post('http://localhost:3001/updateContactInfo', data)
-            .then(response => {
-                console.log("Status Code : ", response.status);
-            })
-            .catch(error => {
-                console.log(error);
-            })
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value
+        });
+        this.setState({
+            editFlag: false
+        })
     }
 
     render() {
         let editButton = null;
         let infoOrForm = null;
 
-
         if (this.state.editFlag === false) {
             infoOrForm =
                 <ul className="container" >
-                    <li className="list-group-item">{this.state.email}</li>
-                    <li className="list-group-item">{this.state.phone}</li>
+                    <li className="list-group-item">{this.props.email}</li>
+                    <li className="list-group-item">{this.props.phone}</li>
                 </ul>
 
             editButton =
@@ -87,7 +65,6 @@ class ContactInfo extends Component {
                         id="email"
                         name="email"
                         placeholder="Email"
-                        onChange={this.handleChange}
                         required
                         autoFocus />
                     <br />
@@ -97,7 +74,6 @@ class ContactInfo extends Component {
                         id="phone"
                         name="phone"
                         placeholder="phone"
-                        onChange={this.handleChange}
                         required />
                     <br />
                     <button style={{ marginTop: '20px' }} className="btn btn-danger btn-xs" onClick={this.handleCancel}>Cancel</button>
@@ -114,5 +90,11 @@ class ContactInfo extends Component {
     }
 }
 
+function mapStateToProps(state) {
+    return {
+        email: state.StudentProfile.email,
+        phone: state.StudentProfile.phone
+    }
+}
 
-export default ContactInfo;
+export default connect(mapStateToProps, { studentGetContactInfo, studentUpdateContactInfo })(ContactInfo);
