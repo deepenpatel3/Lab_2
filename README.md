@@ -1,6 +1,21 @@
-# Simulation of Handshake Using React-Redux-Node-Kafka-MongoDB
+# Simulation of Handshake (joinhandshake.com) Using React-Redux-Node-Kafka-MongoDB
 
-Handshake-Redux-Dummy is the simulation of the website named Handshake. All the services offered by the Handshake for student and company is achieved in this project. Apache Kafka is used as a messaging service and to make the system distributed.
+This is the simulation of the website named Handshake. Here, the services offered by the Handshake for student and company are achieved in this project. Apache Kafka is used as a messaging service and to make the system distributed.
+
+***Note: This project was mainly focused on developing backend server using Nodejs, using Redux to maintain single source of truth for the whole application, utilizing database connection pooling to serve the queries faster and setting up kafka cluster to divert the client requests to different microservices to increase the performance.*** <br>
+***For projects with attractive, intuitive and user-focused client interfaces, please visit [AmazonReplica](https://github.com/deepenpatel3/AmazonReplica).***
+
+## Project overview:
+
+### Architecture diagram:
+<img width="765" alt="Screen Shot 2020-09-12 at 1 45 34 PM" src="https://user-images.githubusercontent.com/52833369/93004695-4255a100-f4fe-11ea-8abd-b176b834bf81.png">
+
+### Project overview:
+- Student profile page:
+<img width="1034" alt="Screen Shot 2020-09-12 at 1 34 07 PM" src="https://user-images.githubusercontent.com/52833369/93004676-00c4f600-f4fe-11ea-8dee-83398d5d789c.png">
+
+- Jobs tab (from student side):
+<img width="1440" alt="Screen Shot 2020-09-12 at 2 09 13 PM" src="https://user-images.githubusercontent.com/52833369/93005029-e9880780-f501-11ea-805c-eb2d2bab57d8.png">
 
 ## Getting Started
 
