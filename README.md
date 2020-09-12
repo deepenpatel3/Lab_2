@@ -7,12 +7,10 @@ This is the simulation of the website named Handshake. Here, the services offere
 - ***For projects with attractive and intuitive client interfaces, please visit [AmazonReplica](https://github.com/deepenpatel3/AmazonReplica).***<br>
 - ***To see the demo video of the project in motion, please visit [Here](https://youtu.be/NCwWtnZDxJY).***
 
-## Project overview:
-
-### Architecture diagram:
+## Architecture diagram:
 <img width="765" alt="Screen Shot 2020-09-12 at 1 45 34 PM" src="https://user-images.githubusercontent.com/52833369/93004695-4255a100-f4fe-11ea-8abd-b176b834bf81.png">
 
-### Project overview:
+## Project overview:
 
 - Student profile page:
 <img width="1034" alt="Screen Shot 2020-09-12 at 1 34 07 PM" src="https://user-images.githubusercontent.com/52833369/93004676-00c4f600-f4fe-11ea-8dee-83398d5d789c.png">
