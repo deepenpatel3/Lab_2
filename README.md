@@ -2,8 +2,10 @@
 
 This is the simulation of the website named Handshake. Here, the services offered by the Handshake for student and company are achieved in this project. Apache Kafka is used as a messaging service and to make the system distributed.
 
-***Note: This project was mainly focused on developing backend server using Nodejs, using Redux to maintain single source of truth for the whole application, utilizing database connection pooling to serve the queries faster and setting up kafka cluster to divert the client requests to different microservices to increase the performance.*** <br>
-***For projects with attractive, intuitive and user-focused client interfaces, please visit [AmazonReplica](https://github.com/deepenpatel3/AmazonReplica).***
+***Note:***<br> 
+- ***This project was mainly focused on developing backend server using Nodejs, using Redux to maintain single source of truth for the whole application, utilizing database connection pooling to serve the queries faster and setting up kafka cluster to direct the client requests to different microservices to increase the performance.*** <br>
+- ***For projects with attractive and intuitive client interfaces, please visit [AmazonReplica](https://github.com/deepenpatel3/AmazonReplica).***<br>
+- ***To see the demo video of the project in motion, please visit [Here](https://youtu.be/NCwWtnZDxJY).***
 
 ## Project overview:
 
@@ -11,11 +13,18 @@ This is the simulation of the website named Handshake. Here, the services offere
 <img width="765" alt="Screen Shot 2020-09-12 at 1 45 34 PM" src="https://user-images.githubusercontent.com/52833369/93004695-4255a100-f4fe-11ea-8abd-b176b834bf81.png">
 
 ### Project overview:
+
 - Student profile page:
 <img width="1034" alt="Screen Shot 2020-09-12 at 1 34 07 PM" src="https://user-images.githubusercontent.com/52833369/93004676-00c4f600-f4fe-11ea-8dee-83398d5d789c.png">
 
 - Jobs tab (from student side):
 <img width="1440" alt="Screen Shot 2020-09-12 at 2 09 13 PM" src="https://user-images.githubusercontent.com/52833369/93005029-e9880780-f501-11ea-805c-eb2d2bab57d8.png">
+
+- Jobs tabe (from company side) showing the details of the applicants:
+<img width="1032" alt="Screen Shot 2020-09-12 at 2 46 40 PM" src="https://user-images.githubusercontent.com/52833369/93005546-d0ce2080-f506-11ea-8a01-44ffc40ee54f.png">
+
+- Student tab (from both student and company side):
+<img width="1035" alt="Screen Shot 2020-09-12 at 2 56 14 PM" src="https://user-images.githubusercontent.com/52833369/93005680-20611c00-f508-11ea-9257-75df877fa640.png">
 
 ## Getting Started
 
