@@ -26,6 +26,18 @@ This is the simulation of the website named Handshake. Here, the services offere
 - Student tab (from both student and company side):
 <img width="1035" alt="Screen Shot 2020-09-12 at 2 56 14 PM" src="https://user-images.githubusercontent.com/52833369/93005680-20611c00-f508-11ea-9257-75df877fa640.png">
 
+## Application Performance comparison with/without connection pooling (using JMeter):
+<img align="left" width="450" alt="Screen Shot 2020-09-12 at 3 01 46 PM" src="https://user-images.githubusercontent.com/52833369/93005752-e47a8680-f508-11ea-8525-1d60e8affd43.png">
+<img width="450" alt="Screen Shot 2020-09-12 at 3 02 28 PM" src="https://user-images.githubusercontent.com/52833369/93005761-fc520a80-f508-11ea-8bd6-bf90179c0876.png">
+
+| Throughput (Without connection pooling) |  Throughput (With connection pooling)  |
+|:---------------------------------------:|:--------------------------------------:|
+|       2603/minute (100 requests)        |        5540/minute (100 requests)      |
+|       3490/minute (200 requests)        |        11070/minute (100 requests)     |
+|       3418/minute (300 requests)        |        4524/minute (300 requests)      |
+|       3427/minute (400 requests)        |        5649/minute (400 requests)      |
+|       3461/minute (500 requests)        |        4204/minute (500 requests)      |
+
 ## Getting Started
 
 Clone code from the master branch and extract files on your local computer.
